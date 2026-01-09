@@ -12,6 +12,30 @@ st.set_page_config(
 model = pickle.load(open("model.pkl", "rb"))
 vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
+# ---------- SIDEBAR ----------
+st.sidebar.markdown("## 📌 Project Overview")
+st.sidebar.write("**Project Title:**")
+st.sidebar.write("News Authenticity Analyzer")
+
+st.sidebar.write("**Domain:**")
+st.sidebar.write("Artificial Intelligence / Machine Learning")
+
+st.sidebar.write("**Technique:**")
+st.sidebar.write("Natural Language Processing (TF-IDF)")
+
+st.sidebar.write("**Algorithm:**")
+st.sidebar.write("Logistic Regression")
+
+st.sidebar.write("**Model Accuracy:**")
+st.sidebar.write("~98.5%")
+
+st.sidebar.write("**Deployment:**")
+st.sidebar.write("Streamlit (Localhost)")
+
+st.sidebar.markdown("---")
+st.sidebar.caption("Final Year Project")
+
+
 # ---------- CUSTOM CSS (AESTHETIC MAGIC) ----------
 st.markdown("""
 <style>
