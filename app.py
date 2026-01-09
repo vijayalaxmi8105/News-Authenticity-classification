@@ -33,7 +33,7 @@ st.sidebar.write("**Deployment:**")
 st.sidebar.write("Streamlit (Localhost)")
 
 st.sidebar.markdown("---")
-st.sidebar.caption("Final Year Project")
+ 
 
 
 # ---------- CUSTOM CSS (AESTHETIC MAGIC) ----------
@@ -83,22 +83,29 @@ news_text = st.text_area(
     height=180,
     placeholder="Enter a news article here..."
 )
-
-analyze = st.button(" Analyze News")
+analyze = st.button("Analyze News")
 
 if analyze:
     if news_text.strip() == "":
         st.warning("⚠️ Please enter some text to analyze.")
     else:
-        data = vectorizer.transform([news_text])
-        prediction = model.predict(data)
+        with st.spinner("Analyzing news content..."):
+            data = vectorizer.transform([news_text])
+            prediction = model.predict(data)
+            confidence = max(model.predict_proba(data)[0]) * 100
+            word_count = len(news_text.split())
+
+        st.write("---")
+        st.info(f"📝 **Word Count:** {word_count}")
+        st.info(f"📊 **Confidence Score:** {confidence:.2f}%")
 
         if prediction[0] == 0:
             st.error("🚨 **Fake News Detected**")
-            st.caption("The text shows patterns commonly associated with fake or misleading news.")
+            st.caption("The content shows linguistic patterns commonly found in fake or misleading news.")
         else:
             st.success("✅ **This News Appears to be Real**")
-            st.caption("The text matches patterns typically found in authentic news articles.")
+            st.caption("The content aligns with patterns observed in authentic news articles.")
+
 
 st.markdown('</div>', unsafe_allow_html=True)
 
