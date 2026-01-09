@@ -21,25 +21,28 @@ model, vectorizer = load_models()
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# ---------- SIDEBAR ----------
+ #----------SIDEBAR ----------
 with st.sidebar:
-    st.markdown("## 📌 Project Overview")
-    st.write("**Project Title:** News Authenticity Analyzer")
-    st.write("**Domain:** Artificial Intelligence / Machine Learning")
-    st.write("**Technique:** Natural Language Processing (TF-IDF)")
-    st.write("**Algorithm:** Logistic Regression")
-    st.write("**Model Accuracy:** ~98.5%")
-    st.write("**Deployment:** Streamlit (Localhost)")
-    
-    st.markdown("---")
-    st.markdown("### 🕒 Analysis History")
-    
-    if not st.session_state.history:
+    st.markdown(" Analysis History")
+
+    if "history" not in st.session_state:
+        st.session_state.history = []
+
+    if len(st.session_state.history) == 0:
         st.caption("No analyses yet.")
     else:
-        for i, item in enumerate(reversed(st.session_state.history[-5:]), 1):
-            st.markdown(f"**{i}.** {item['result']} - {item['confidence']:.1f}%")
-            st.caption(f"{item['text']}...")
+        for i, item in enumerate(reversed(st.session_state.history), 1):
+            result = item.get("result", "N/A")
+            confidence = item.get("confidence", "N/A")
+            words = item.get("words", "N/A")
+
+            st.markdown(
+                f"**{i}. {result}**  \n"
+                f"Confidence: {confidence}%  \n"
+                f"Words: {words}"
+            )
+
+
 
 # ---------- CUSTOM CSS ----------
 st.markdown("""
@@ -240,42 +243,41 @@ if analyze and news_text.strip():
             </div>
         </div>
         """, unsafe_allow_html=True)
-    
-    # Prediction Result
-    if prediction[0] == 0:  # Fake news
-        st.markdown("""
-        <div class="result-metric fake-news">
-            <div class="result-icon">🚨</div>
+        # Prediction Result
+        is_fake = prediction[0] == 0
+
+        result_class = "fake-news" if is_fake else "real-news"
+        result_icon = "🚨" if is_fake else "✅"
+        result_text = "Fake News Detected" if is_fake else "News Appears Authentic"
+
+        analysis_text = (
+            "The content analysis indicates characteristics that are statistically more common "
+            "in potentially misleading or unverified news sources."
+            if is_fake
+            else
+            "The content demonstrates linguistic patterns consistent with verified news sources."
+        )
+
+        note_text = (
+            "Please verify information through trusted sources."
+            if is_fake
+            else
+            "Always verify information through multiple reliable sources."
+        )
+
+        st.markdown(f"""
+        <div class="result-metric {result_class}">
+            <div class="result-icon">{result_icon}</div>
             <div class="result-content">
                 <h4>Analysis Result</h4>
-                <p>Fake News Detected</p>
+                <p>{result_text}</p>
             </div>
         </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
+
         <div class="analysis-box">
             <h3>Analysis</h3>
-            <p>The content analysis indicates characteristics that are statistically more common in potentially misleading or unverified news sources. This analysis is based on linguistic patterns in the text.</p>
-            <p><em>Note: This is an automated analysis. Please verify information through trusted sources.</em></p>
-        </div>
-        """, unsafe_allow_html=True)
-    else:  # Real news
-        st.markdown("""
-        <div class="result-metric real-news">
-            <div class="result-icon">✅</div>
-            <div class="result-content">
-                <h4>Analysis Result</h4>
-                <p>News Appears Authentic</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="analysis-box">
-            <h3>Analysis</h3>
-            <p>The content demonstrates linguistic patterns consistent with verified news sources. The analysis is based on statistical patterns in the text.</p>
-            <p><em>Note: This is an automated analysis. Always verify information through multiple sources.</em></p>
+            <p>{analysis_text}</p>
+            <p><em>Note: This is an automated analysis. {note_text}</em></p>
         </div>
         """, unsafe_allow_html=True)
 
